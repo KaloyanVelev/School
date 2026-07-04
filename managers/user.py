@@ -4,9 +4,9 @@ from database import db
 from models.user import UserModel
 from managers.auth import AuthManager
 from models.enums import UserRole
-from sqlalchemy import func
+from sqlalchemy import func, false
 
-
+DUMMY_PASSWORD_HASH = generate_password_hash("dummy_password")
 
 class UserManager:
     @staticmethod
@@ -29,8 +29,15 @@ class UserManager:
     @staticmethod
     def login(provided_data):
         user = UserModel.query.filter_by(username=provided_data['username']).first()
-        if not user or not check_password_hash(user.password,provided_data['password']):
+        if user:
+            is_valid_password = check_password_hash(user.password, provided_data['password'])
+        else:
+            check_password_hash(DUMMY_PASSWORD_HASH, provided_data['password'])
+            is_valid_password =false
+
+        if not user or not is_valid_password:
             return jsonify({"error": "invalid credentials"}), 400
+
         token = AuthManager.encode_token(user)
         return {
             "message": "login successful!",
