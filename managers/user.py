@@ -4,6 +4,8 @@ from database import db
 from models.user import UserModel
 from managers.auth import AuthManager
 from models.enums import UserRole
+from sqlalchemy import func
+from sqlalchemy.exc import InternalError, IntegrityError
 from sqlalchemy import func, false
 from exceptions import AuthError
 
@@ -20,7 +22,11 @@ class UserManager:
         user = UserModel(**provided_data)
 
         db.session.add(user)
-        db.session.commit()
+        try:
+            db.session.commit()
+        except IntegrityError:
+            db.session.rollback()
+            raise ValueError('Email already registered!')
         return {
             'message': f'Added User named: {user.username}'
         }

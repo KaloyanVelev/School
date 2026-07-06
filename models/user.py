@@ -9,7 +9,7 @@ class UserModel(db.Model):
     __tablename__ = 'users'
 
     id = db.Column(db.String(40), primary_key=True, default=lambda: str(uuid.uuid4()))
-    username = db.Column(db.String(40), unique=True, nullable=False)
+    username = db.Column(db.String(40), unique=False, nullable=False)
     email = db.Column(db.String(40), unique=True, nullable=False)
     password = db.Column(db.Text(), nullable=False)
     permission = db.Column(db.Enum(UserRole),nullable=False, default=UserRole.STUDENT)
