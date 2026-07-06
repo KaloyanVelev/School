@@ -4,15 +4,16 @@ from database import db
 from models.user import UserModel
 from managers.auth import AuthManager
 from models.enums import UserRole
-from sqlalchemy import func
+from sqlalchemy import func, false
+from exceptions import AuthError
 
-
+DUMMY_PASSWORD_HASH = generate_password_hash("dummy_password")
 
 class UserManager:
     @staticmethod
     def register(provided_data):
         if UserModel.query.filter_by(email=provided_data['email']).first():
-            raise ValueError('Email already registered')
+            raise AuthError('Email already registered', status_code=409)
 
         provided_data['password'] = generate_password_hash(provided_data['password'])
 
@@ -29,8 +30,15 @@ class UserManager:
     @staticmethod
     def login(provided_data):
         user = UserModel.query.filter_by(username=provided_data['username']).first()
-        if not user or not check_password_hash(user.password,provided_data['password']):
-            return jsonify({"error": "invalid credentials"}), 400
+        if user:
+            is_valid_password = check_password_hash(user.password, provided_data['password'])
+        else:
+            check_password_hash(DUMMY_PASSWORD_HASH, provided_data['password'])
+            is_valid_password =false
+
+        if not user or not is_valid_password:
+            raise AuthError("invalid credentials",status_code=401)
+
         token = AuthManager.encode_token(user)
         return {
             "message": "login successful!",
