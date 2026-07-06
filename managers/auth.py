@@ -23,11 +23,16 @@ class AuthManager:
             payload = jwt.decode(token, current_app.config['SECRET_KEY'], algorithms=['HS256'])
             return payload['sub']
         except jwt.ExpiredSignatureError:
-            return {'Expired session!'}, 400
+            return None
         except jwt.InvalidTokenError:
-            return {'Invalid token!'}, 400
+            return None
 
 @auth.verify_token
 def verify_token(token):
     user_id = AuthManager.decode_token(token)
     return UserModel.query.filter_by(id=user_id).first() if user_id else None
+
+
+@auth.error_handler
+def auth_error_handler():
+    return {'error': 'Invalid or expired token'}, 401
