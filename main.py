@@ -4,6 +4,16 @@ from resources.routes import app_bp
 from dotenv import load_dotenv
 import os
 import secrets
+from models.enums import UserRole
+from models.user import UserModel
+from models.school import SchoolModel
+from models.school_class import SchoolClassModel
+from models.school_subject import SchoolSubjectModel
+from models.student import StudentModel
+from models.schedule import ScheduleModel
+from models.remark import RemarkModel
+from models.parent_student import ParentStudentModel
+from models.grade import GradeModel
 
 load_dotenv()
 
