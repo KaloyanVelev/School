@@ -9,7 +9,6 @@ policy = PasswordPolicy.from_names(
 
 
 class BaseUserSchema(Schema):
-    username = fields.String(required=True, validate=validate.Length(min=4, max=40))
     email = fields.Email(required=True)
 
 

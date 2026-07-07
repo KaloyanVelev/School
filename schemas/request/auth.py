@@ -4,7 +4,9 @@ from schemas.bases import BaseUserSchema, PasswordValidationMixin
 
 
 class UserCreationSchema(BaseUserSchema, PasswordValidationMixin):
+    first_name = fields.String(required=True, validate=validate.Length(min=1, max=40))
+    last_name = fields.String(required=True,validate=validate.Length(min=1, max=40))
     password_error ='Password must contain upper case and number'
 
 class UserLogInSchema(Schema, PasswordValidationMixin):
-    username = fields.String(required=True, validate=validate.Length(min=4, max=40))
+    email = fields.Email(required=True)
