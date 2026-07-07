@@ -14,6 +14,11 @@ DUMMY_PASSWORD_HASH = generate_password_hash("dummy_password")
 class UserManager:
     @staticmethod
     def register(provided_data):
+        if not provided_data.get('first_name'):
+            raise ValueError('First name not provided')
+        if not provided_data.get('last_name'):
+            raise ValueError('Last name not provided')
+
         if UserModel.query.filter_by(email=provided_data['email']).first():
             raise AuthError('Email already registered', status_code=409)
 
@@ -28,14 +33,14 @@ class UserManager:
             db.session.rollback()
             raise ValueError('Email already registered!')
         return {
-            'message': f'Added User named: {user.username}'
+            'message': f'Added User named: {user.first_name} {user.last_name}',
         }
 
 
 
     @staticmethod
     def login(provided_data):
-        user = UserModel.query.filter_by(username=provided_data['username']).first()
+        user = UserModel.query.filter_by(email=provided_data['email']).first()
         if user:
             is_valid_password = check_password_hash(user.password, provided_data['password'])
         else:
