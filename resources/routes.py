@@ -16,13 +16,6 @@ def auth_error_handler(error):
     response = jsonify({'error': error.message})
     response.status_code = error.status_code
     return response
-@app_bp.route('/login', methods=['POST'])
-@validate_schema(UserLogInSchema)
-def user_authentication():
-    provided_data = request.get_json()
-    result = UserManager.login(provided_data)
-
-    return jsonify(result), 201
 @app_bp.route('/register', methods=['POST'])
 @validate_schema(UserCreationSchema)
 def user_registration():
@@ -31,6 +24,15 @@ def user_registration():
     result = UserManager.register(provided_data)
 
     return jsonify(result), 201
+
+@app_bp.route('/login', methods=['POST'])
+@validate_schema(UserLogInSchema)
+def user_authentication():
+    provided_data = request.get_json()
+    result = UserManager.login(provided_data)
+
+    return jsonify(result), 201
+
 @app_bp.route('/')
 def test():
     return '<p>Database connected</p>'
