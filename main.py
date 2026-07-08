@@ -1,9 +1,12 @@
+from time import sleep
+
 from flask import Flask
 from database import db
 from resources.routes import app_bp
 from dotenv import load_dotenv
 import os
 import secrets
+from admin_registering import init_admin
 from models.enums import UserRole
 from models.user import UserModel
 from models.school import SchoolModel
@@ -47,4 +50,5 @@ app = create_app()
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
+        init_admin()
     app.run(debug=True)
