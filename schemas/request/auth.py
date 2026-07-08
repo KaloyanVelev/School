@@ -10,3 +10,7 @@ class UserCreationSchema(BaseUserSchema, PasswordValidationMixin):
 
 class UserLogInSchema(Schema, PasswordValidationMixin):
     email = fields.Email(required=True)
+
+class ScoolAddSchema(Schema):
+    name = fields.String(required=True, validate=validate.Length(min=1, max=150))
+    institution_address = fields.String(required=True,validate=validate.Length(min=5, max=500))

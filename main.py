@@ -30,6 +30,8 @@ db_password = os.getenv('DB_PASSWORD')
 db_host = os.getenv('DB_HOST')
 db_port = os.getenv('DB_PORT')
 
+app_port = os.getenv('APP_PORT')
+
 secret_key = os.getenv('SECRET_KEY')
 
 if not secret_key:
@@ -57,4 +59,4 @@ if __name__ == '__main__':
     with app.app_context():
         db.create_all()
         init_admin()
-    app.run(debug=True)
+    app.run(debug=True, port=app_port)

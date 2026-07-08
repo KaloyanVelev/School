@@ -14,17 +14,34 @@ DUMMY_PASSWORD_HASH = generate_password_hash("dummy_password")
 class UserManager:
     @staticmethod
     def register(provided_data):
-        if not provided_data.get('first_name'):
+        provided_first_name = provided_data.get('first_name')
+        provided_last_name = provided_data.get('last_name')
+        provided_email = provided_data.get('email')
+        provided_password = provided_data.get('password')
+
+
+
+        if not provided_first_name:
             raise ValueError('First name not provided')
-        if not provided_data.get('last_name'):
+        if not provided_last_name:
             raise ValueError('Last name not provided')
+        if not provided_email:
+            raise ValueError('Email not provided')
+        if not provided_password:
+            raise ValueError('Password not provided')
 
         if UserModel.query.filter_by(email=provided_data['email']).first():
             raise AuthError('Email already registered', status_code=409)
 
-        provided_data['password'] = generate_password_hash(provided_data['password'])
+        password = generate_password_hash(provided_password)
 
-        user = UserModel(**provided_data)
+        user = UserModel(
+            first_name=provided_data['first_name'],
+            last_name=provided_data['last_name'],
+            email=provided_data['email'],
+            password=password,
+            permission=UserRole.STUDENT
+        )
 
         db.session.add(user)
         try:
@@ -40,11 +57,19 @@ class UserManager:
 
     @staticmethod
     def login(provided_data):
-        user = UserModel.query.filter_by(email=provided_data['email']).first()
+        provided_email = provided_data.get('email')
+        provided_password = provided_data.get('password')
+
+        if not provided_email:
+            raise ValueError('Email not provided')
+        if not provided_password:
+            raise ValueError('Password not provided')
+
+        user = UserModel.query.filter_by(email=provided_email).first()
         if user:
-            is_valid_password = check_password_hash(user.password, provided_data['password'])
+            is_valid_password = check_password_hash(user.password, provided_password)
         else:
-            check_password_hash(DUMMY_PASSWORD_HASH, provided_data['password'])
+            check_password_hash(DUMMY_PASSWORD_HASH, provided_password)
             is_valid_password =false
 
         if not user or not is_valid_password:
