@@ -1,8 +1,13 @@
 from time import sleep
-
+from flask import Flask
+from flask_restful import Api
+from resources.routes import routes
+from database import db
+from dotenv import load_dotenv
+import os
 from flask import Flask
 from database import db
-from resources.routes import app_bp
+
 from dotenv import load_dotenv
 import os
 import secrets
@@ -40,7 +45,8 @@ def create_app():
 
 
     db.init_app(app)
-    app.register_blueprint(app_bp)
+    api = Api(app)
+    [api.add_resource(*route) for route in routes]
 
     return app
 
