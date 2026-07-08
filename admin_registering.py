@@ -49,7 +49,7 @@ def init_admin():
             first_name = admin_first_name,
             last_name = admin_last_name,
             email = admin_email,
-            password = admin_password,
+            password = hashed_password,
             permission = 'ADMIN'
         )
         db.session.add(new_admin)

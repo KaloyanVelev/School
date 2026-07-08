@@ -10,3 +10,7 @@ class UserCreationSchema(BaseUserSchema, PasswordValidationMixin):
 
 class UserLogInSchema(Schema, PasswordValidationMixin):
     email = fields.Email(required=True)
+
+class SchoolListSchema(Schema):
+    id = fields.String(dump_only=True)
+    name = fields.String(required=True)

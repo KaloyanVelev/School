@@ -1,5 +1,7 @@
 from flask import request, jsonify
 from flask_restful import Resource
+
+from managers.School import SchoolManager
 from managers.auth import auth
 from managers.user import UserManager
 from schemas.request.auth import UserLogInSchema, UserCreationSchema
@@ -47,6 +49,25 @@ class UserLogInResource(Resource):
             response = jsonify({'error': error.message})
             response.status_code = error.status_code
             return response
+
+class SchoolResource(Resource):
+    @auth.login_required
+    @permission_required("ADMIN")
+    def get(self):
+        try:
+            result = {}
+            result['schools'] = SchoolManager.schools_list()
+            return result, 200
+
+        except Exception as e:
+            return jsonify({'error': 'something unexpected went wrong'})
+
+    @auth.login_required
+    @permission_required("ADMIN")
+    def post(self):
+        provided_data = request.get_json()
+
+        return
 
 class TestResource(Resource):
     def get(self):
