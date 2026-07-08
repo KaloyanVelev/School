@@ -18,14 +18,11 @@ class SchoolManager:
     def schools_list():
         try:
             schools = SchoolModel.query.all()
-
-            # pass many=True because 'schools' is a list of objects
             schema = SchoolListSchema(many=True)
-            return schema.dump(schools)  # Returns clean lists of dicts with IDs!
+            return schema.dump(schools)
 
-        except Exception as e:
-            print("❌ DATABASE/SERIALIZATION ERROR:", e)
-            return {'error': 'something unexpected went wrong'}
+        except Exception:
+            raise ValueError('somethin went wrong')
 
 
 
