@@ -32,7 +32,6 @@ def user_authentication():
     result = UserManager.login(provided_data)
 
     return jsonify(result), 201
-
 @app_bp.route('/')
 def test():
     return '<p>Database connected</p>'
