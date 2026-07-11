@@ -1,19 +1,9 @@
 import os
 from flask.cli import load_dotenv
-
-from managers import auth
-from models.enums import UserRole
-from models.user import UserModel
-from flask import jsonify
-from werkzeug.security import check_password_hash, generate_password_hash
+from werkzeug.security import generate_password_hash
 from database import db
 from models.user import UserModel
-from managers.auth import AuthManager
 from models.enums import UserRole
-from sqlalchemy import func
-from sqlalchemy.exc import InternalError, IntegrityError
-from sqlalchemy import func, false
-from exceptions import AuthError
 
 
 

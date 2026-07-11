@@ -1,13 +1,7 @@
-from time import sleep
-from flask import Flask
 from flask_restful import Api
 from resources.routes import routes
-from database import db
-from dotenv import load_dotenv
-import os
 from flask import Flask
 from database import db
-
 from dotenv import load_dotenv
 import os
 import secrets
