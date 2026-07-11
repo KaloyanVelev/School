@@ -1,6 +1,4 @@
 import uuid
-from enum import Enum as PyEnum
-
 from database import db
 from models.enums import UserRole
 from sqlalchemy import func

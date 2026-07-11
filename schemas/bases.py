@@ -1,4 +1,4 @@
-from marshmallow import Schema, fields, validate,validates, ValidationError
+from marshmallow import Schema, fields, validates, ValidationError
 from password_strength import PasswordPolicy
 
 policy = PasswordPolicy.from_names(

@@ -9,3 +9,14 @@ class SchoolListSchema(Schema):
     id = fields.String(dump_only=True)
     name = fields.String(dump_only=True,validate=validate.Length(min=1, max=150))
     institution_address = fields.String(dump_only=True,validate=validate.Length(min=5, max=500))
+
+
+class DirectorSchoolListSchema(Schema):
+    director_id = fields.String()
+    school_id = fields.String()
+    school_name = fields.String()
+
+    first_name = fields.String()
+    last_name = fields.String()
+    affiliated_school_id = fields.String()
+    institution_address = fields.String()

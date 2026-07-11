@@ -1,16 +1,8 @@
-from flask import jsonify
-from sqlalchemy.sql.functions import user
-from werkzeug.security import check_password_hash, generate_password_hash
 from database import db
 from models.school import SchoolModel
 from models.user import UserModel
-from managers.auth import AuthManager
 from models.enums import UserRole
-from sqlalchemy import func
-from sqlalchemy.exc import InternalError, IntegrityError
-from sqlalchemy import func, false
-from exceptions import AuthError
-from schemas.response.auth import SchoolListSchema
+from schemas.response.auth import SchoolListSchema, DirectorSchoolListSchema
 
 
 class SchoolManager:
@@ -22,7 +14,7 @@ class SchoolManager:
             return schema.dump(schools)
 
         except Exception:
-            raise ValueError('somethin went wrong')
+            raise ValueError('something went wrong')
 
 
 
@@ -51,3 +43,53 @@ class SchoolManager:
         return {
             'message': f'Added School named: {school.name} on address: {school.institution_address}',
         }
+    @staticmethod
+    def add_school_director(provided_data):
+        provided_director_id = provided_data.get('director_id')
+        provided_school_id = provided_data.get('school_id')
+        if not provided_director_id:
+            raise ValueError('director id not provided')
+        if not provided_school_id:
+            raise ValueError('school id not provided')
+        user = db.session.get(UserModel, provided_director_id)
+
+        if not user:
+            raise ValueError('user not found')
+        if user.permission == UserRole.DIRECTOR:
+            raise ValueError('user already a director')
+        try:
+            user.permission = UserRole.DIRECTOR
+            user.affiliated_school_id = provided_school_id
+
+            db.session.commit()
+        except Exception as e:
+            db.session.rollback()
+            raise ValueError('Something went wrong in saving your changes')
+        return {
+            'message': f'Added School director: {user.first_name} {user.last_name} to school: {provided_school_id}'
+        }
+
+    @staticmethod
+    def list_school_directors():
+        try:
+            results = db.session.query(
+                UserModel.id.label('director_id'),
+                UserModel.first_name,
+                UserModel.last_name,
+                UserModel.affiliated_school_id,
+                SchoolModel.id.label('school_id'),
+                SchoolModel.name.label('school_name'),
+                SchoolModel.institution_address
+
+            ).join(
+                SchoolModel,
+                UserModel.affiliated_school_id == SchoolModel.id
+            ).filter(
+                UserModel.permission == UserRole.DIRECTOR
+            ).all()
+            schema = DirectorSchoolListSchema(many=True)
+
+            return schema.dump(results)
+
+        except Exception:
+            raise ValueError('Something went wrong in database extraction')

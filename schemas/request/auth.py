@@ -1,5 +1,4 @@
 from marshmallow import fields, validate, Schema
-from marshmallow import ValidationError
 from schemas.bases import BaseUserSchema, PasswordValidationMixin
 
 
@@ -14,3 +13,7 @@ class UserLogInSchema(Schema, PasswordValidationMixin):
 class ScoolAddSchema(Schema):
     name = fields.String(required=True, validate=validate.Length(min=1, max=150))
     institution_address = fields.String(required=True,validate=validate.Length(min=5, max=500))
+
+class AddDirectorsSchema(Schema):
+    director_id = fields.String(required=True,validate=validate.Length(equal=36))
+    school_id = fields.String(required=True, validate=validate.Length(equal=36))
