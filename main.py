@@ -14,7 +14,6 @@ from models.school_subject import SchoolSubjectModel
 from models.student import StudentModel
 from models.schedule import ScheduleModel
 from models.remark import RemarkModel
-from models.parent_student import ParentStudentModel
 from models.grade import GradeModel
 
 load_dotenv()

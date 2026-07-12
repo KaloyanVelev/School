@@ -4,7 +4,6 @@ from models.user import UserModel
 from managers.auth import AuthManager
 from models.enums import UserRole
 from sqlalchemy.exc import IntegrityError
-from sqlalchemy import false
 from exceptions import AuthError
 
 DUMMY_PASSWORD_HASH = generate_password_hash("dummy_password")
@@ -49,6 +48,7 @@ class UserManager:
             raise ValueError('Email already registered!')
         return {
             'message': f'Added User named: {user.first_name} {user.last_name}',
+            'id': user.id
         }
 
 
@@ -68,7 +68,7 @@ class UserManager:
             is_valid_password = check_password_hash(user.password, provided_password)
         else:
             check_password_hash(DUMMY_PASSWORD_HASH, provided_password)
-            is_valid_password =false
+            is_valid_password = False
 
         if not user or not is_valid_password:
             raise AuthError("invalid credentials",status_code=401)
@@ -79,4 +79,3 @@ class UserManager:
             "token": token,
             "Permission Level": user.permission.name
         }
-

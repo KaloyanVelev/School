@@ -20,3 +20,31 @@ class DirectorSchoolListSchema(Schema):
     last_name = fields.String()
     affiliated_school_id = fields.String()
     institution_address = fields.String()
+
+class SchoolClassListSchema(Schema):
+    id = fields.String(dump_only=True)
+    name = fields.String(dump_only=True)
+    grade = fields.Integer(dump_only=True)
+    letter = fields.String(dump_only=True)
+
+class SchoolSubjectListSchema(Schema):
+    id = fields.String(dump_only=True)
+    name = fields.String(dump_only=True)
+
+class TeacherListSchema(Schema):
+    id = fields.String(dump_only=True)
+    first_name = fields.String(dump_only=True)
+    last_name = fields.String(dump_only=True)
+    email = fields.Email(dump_only=True)
+
+class StudentListSchema(Schema):
+    id = fields.String(dump_only=True)
+    first_name = fields.String(dump_only=True)
+    last_name = fields.String(dump_only=True)
+    email = fields.Email(dump_only=True)
+
+class ParentListSchema(Schema):
+    id = fields.String(dump_only=True)
+    first_name = fields.String(dump_only=True)
+    last_name = fields.String(dump_only=True)
+    email = fields.Email(dump_only=True)

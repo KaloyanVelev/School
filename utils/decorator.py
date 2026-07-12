@@ -11,6 +11,9 @@ def permission_required(required_permission):
         @wraps(function)
         def decorator_function(*args, **kwargs):
             current_user = auth.current_user()
+            if current_user.permission.value == "admin":
+                return function(*args, **kwargs)
+
             if current_user.permission.value != required_permission:
                 abort(403)
             return function(*args, **kwargs)
