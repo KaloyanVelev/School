@@ -1,5 +1,5 @@
-import uuid
 from database import db
+import uuid
 
 class SchoolSubjectModel(db.Model):
     __tablename__ = 'school_subjects'
