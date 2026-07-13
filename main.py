@@ -13,9 +13,8 @@ from models.school_class import SchoolClassModel
 from models.school_subject import SchoolSubjectModel
 from models.student import StudentModel
 from models.schedule import ScheduleModel
-from models.remark import RemarkModel
 from models.grade import GradeModel
-from flask_cors import CORS # Import CORS
+from flask_cors import CORS
 
 load_dotenv()
 
@@ -35,7 +34,7 @@ if not secret_key:
 
 def create_app():
     app = Flask(__name__)
-    CORS(app) # Initialize CORS with your app
+    CORS(app)
 
     app.config['SQLALCHEMY_DATABASE_URI'] = f'postgresql://{db_user}:{db_password}@{db_host}:{db_port}/postgres'
     app.config['SECRET_KEY'] = f"{secret_key}"

@@ -5,7 +5,7 @@ from managers.auth import AuthManager
 from models.enums import UserRole
 from sqlalchemy.exc import IntegrityError
 from exceptions import AuthError
-from schemas.response.auth import UserResponseSchema # Import UserResponseSchema
+from schemas.response.auth import UserResponseSchema
 
 DUMMY_PASSWORD_HASH = generate_password_hash("dummy_password")
 

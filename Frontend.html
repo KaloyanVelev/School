@@ -188,7 +188,7 @@
             font-size: 0.95rem;
             transition: all 0.2s;
         }
-        .form-group input:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 3px var(--primary-light); }
+        .form-group input:focus, .form-group select:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 3px var(--primary-light); }
 
         button {
             padding: 0.6rem 1.25rem;
@@ -444,14 +444,14 @@
                             <div class="grid-2">
                                 <form data-endpoint="/principle/add" data-method="POST" style="background: var(--bg); padding: 1rem; border-radius: var(--radius-md);">
                                     <h4 style="margin-top: 0;">Assign Director</h4>
-                                    <div class="form-group"><label>Director ID</label><input type="text" name="director_id" required></div>
-                                    <div class="form-group"><label>School ID</label><input type="text" name="school_id" required></div>
+                                    <div class="form-group"><label>Director</label><select name="director_id" required></select></div>
+                                    <div class="form-group"><label>School</label><select name="school_id" required></select></div>
                                     <button type="submit">Assign to School</button>
                                 </form>
                                 <form data-endpoint="/teacher/add" data-method="POST" style="background: var(--bg); padding: 1rem; border-radius: var(--radius-md);">
                                     <h4 style="margin-top: 0;">Assign Teacher</h4>
-                                    <div class="form-group"><label>Teacher ID</label><input type="text" name="teacher_id" required></div>
-                                    <div class="form-group"><label>School ID</label><input type="text" name="school_id" required></div>
+                                    <div class="form-group"><label>Teacher</label><select name="teacher_id" required></select></div>
+                                    <div class="form-group"><label>School</label><select name="school_id" required></select></div>
                                     <button type="submit">Assign to School</button>
                                 </form>
                             </div>
@@ -475,7 +475,7 @@
                                             <div class="form-group"><label>Grade Level (e.g., 10)</label><input type="number" name="grade" required></div>
                                             <div class="form-group"><label>Letter (e.g., A)</label><input type="text" name="letter" required></div>
                                         </div>
-                                        <div class="form-group"><label>School ID</label><input type="text" name="school_id" required></div>
+                                        <div class="form-group"><label>School</label><select name="school_id" required></select></div>
                                         <button type="submit">Create Class</button>
                                     </form>
                                 </div>
@@ -488,13 +488,13 @@
                                 <form data-endpoint="/school/subject/add" data-method="POST" style="background: var(--bg); padding: 1rem; border-radius: var(--radius-md);">
                                     <h4 style="margin-top: 0;">Add Subject</h4>
                                     <div class="form-group"><label>Subject Name</label><input type="text" name="name" required></div>
-                                    <div class="form-group"><label>School ID</label><input type="text" name="school_id" required></div>
+                                    <div class="form-group"><label>School</label><select name="school_id" required></select></div>
                                     <button type="submit">Add Subject</button>
                                 </form>
                                 <form data-endpoint="/student/add-to-class" data-method="POST" style="background: var(--bg); padding: 1rem; border-radius: var(--radius-md);">
                                     <h4 style="margin-top: 0;">Enroll Student</h4>
-                                    <div class="form-group"><label>Student ID</label><input type="text" name="student_id" required></div>
-                                    <div class="form-group"><label>Class ID</label><input type="text" name="class_id" required></div>
+                                    <div class="form-group"><label>Student</label><select name="student_id" required></select></div>
+                                    <div class="form-group"><label>Class</label><select name="class_id" required></select></div>
                                     <button type="submit">Enroll Student</button>
                                 </form>
                             </div>
@@ -508,9 +508,9 @@
                                     <div class="form-group"><label>Class Block Number</label><input type="number" name="class_number" required></div>
                                     <div class="form-group"><label>Start Time</label><input type="time" name="start_time" required></div>
                                     <div class="form-group"><label>End Time</label><input type="time" name="end_time" required></div>
-                                    <div class="form-group"><label>Class ID</label><input type="text" name="class_id" required></div>
-                                    <div class="form-group"><label>Teacher ID</label><input type="text" name="teacher_id" required></div>
-                                    <div class="form-group"><label>Subject ID</label><input type="text" name="subject_id" required></div>
+                                    <div class="form-group"><label>Class</label><select name="class_id" required></select></div>
+                                    <div class="form-group"><label>Teacher</label><select name="teacher_id" required></select></div>
+                                    <div class="form-group"><label>Subject</label><select name="subject_id" required></select></div>
                                     <div class="form-group"><label>Room Number</label><input type="number" name="room_number" required></div>
                                 </div>
                                 <button type="submit">Add to Master Timetable</button>
@@ -521,12 +521,16 @@
                         <div id="admin-panel-grading" class="admin-panel">
                             <h3>Issue New Grade</h3>
                             <form data-endpoint="/grade/add" data-method="POST" style="max-width: 600px;">
-                                <div class="grid-2">
-                                    <div class="form-group"><label>Student ID</label><input type="text" name="student_id" required></div>
-                                    <div class="form-group"><label>Subject ID</label><input type="text" name="subject_id" required></div>
+                                <div class="form-group">
+                                    <label>School</label>
+                                    <select name="school_id" required></select>
                                 </div>
                                 <div class="grid-2">
-                                    <div class="form-group"><label>Teacher ID</label><input type="text" name="teacher_id" required></div>
+                                    <div class="form-group"><label>Student</label><select name="student_id" required></select></div>
+                                    <div class="form-group"><label>Subject</label><select name="subject_id" required></select></div>
+                                </div>
+                                <div class="grid-2">
+                                    <div class="form-group"><label>Teacher</label><select name="teacher_id" required></select></div>
                                     <div class="form-group"><label>Grade Value (2-6)</label><input type="number" name="grade" min="2" max="6" required></div>
                                 </div>
                                 <div class="form-group"><label>Teacher's Comment (Optional)</label><input type="text" name="comment"></div>
@@ -567,19 +571,19 @@
 
                             <div class="grid-2">
                                 <form onsubmit="event.preventDefault(); app.loadAdminData(`/school/${this.school_id.value}/teachers`)">
-                                    <div class="form-group"><label>Find Teachers by School ID</label><input type="text" name="school_id" required></div>
+                                    <div class="form-group"><label>Find Teachers by School</label><select name="school_id" required></select></div>
                                     <button type="submit" class="outline full-width">List Teachers</button>
                                 </form>
                                 <form onsubmit="event.preventDefault(); app.loadAdminData(`/school/${this.school_id.value}/classes`)">
-                                    <div class="form-group"><label>Find Classes by School ID</label><input type="text" name="school_id" required></div>
+                                    <div class="form-group"><label>Find Classes by School</label><select name="school_id" required></select></div>
                                     <button type="submit" class="outline full-width">List Classes</button>
                                 </form>
                                 <form onsubmit="event.preventDefault(); app.loadAdminData(`/school/${this.school_id.value}/subjects`)">
-                                    <div class="form-group"><label>Find Subjects by School ID</label><input type="text" name="school_id" required></div>
+                                    <div class="form-group"><label>Find Subjects by School</label><select name="school_id" required></select></div>
                                     <button type="submit" class="outline full-width">List Subjects</button>
                                 </form>
                                 <form onsubmit="event.preventDefault(); app.loadAdminData(`/school/${this.school_id.value}/students`)">
-                                    <div class="form-group"><label>Find Students by School ID</label><input type="text" name="school_id" required></div>
+                                    <div class="form-group"><label>Find Students by School</label><select name="school_id" required></select></div>
                                     <button type="submit" class="outline full-width">List Students</button>
                                 </form>
                             </div>
@@ -611,6 +615,7 @@
 
         const app = {
             token: localStorage.getItem("token"),
+            adminDataLoaded: false,
 
             init() {
                 this.bindEvents();
@@ -689,6 +694,7 @@
                 // Auto-load data based on page
                 if (pageId === 'grades') this.loadGrades();
                 if (pageId === 'schedule') this.loadSchedule();
+                if (pageId === 'admin' && !this.adminDataLoaded) this.loadInitialAdminData();
             },
 
             switchAdminTab(tabId) {
@@ -714,10 +720,16 @@
                     try { data = text ? JSON.parse(text) : {}; }
                     catch (e) { data = { message: text }; }
 
-                    if (!res.ok) throw new Error(data.message || data.error || `Server returned ${res.status}`);
+                    if (!res.ok) {
+                        this.logToConsole(`API Error for ${method} ${endpoint}: ${JSON.stringify(data)}`);
+                        throw new Error(data.message || data.error || `Server returned ${res.status}`);
+                    }
+
+                    this.logToConsole(`API Response for ${method} ${endpoint}: ${JSON.stringify(data)}`);
                     return data;
                 } catch (error) {
                     console.error("API Error:", error);
+                    this.logToConsole(`API Error for ${method} ${endpoint}: ${error.message}`);
                     throw error;
                 }
             },
@@ -856,6 +868,79 @@
                 }
             },
 
+            async loadInitialAdminData() {
+                try {
+                    this.logToConsole("Loading initial admin data (users and schools)...");
+                    const [users, schools] = await Promise.all([
+                        this.fetchAPI('/users/list', 'GET'),
+                        this.fetchAPI('/schools/list', 'GET')
+                    ]);
+
+                    const userOptions = users.map(u => ({ value: u.id, text: `${u.first_name} ${u.last_name} (${u.email})` }));
+                    this.populateSelect('select[name="director_id"]', userOptions, true);
+                    this.populateSelect('select[name="teacher_id"]', userOptions, true);
+                    this.populateSelect('select[name="student_id"]', userOptions, true);
+
+                    const schoolOptions = schools.map(s => ({ value: s.id, text: s.name }));
+                    this.populateSelect('select[name="school_id"]', schoolOptions, true);
+
+                    this.adminDataLoaded = true;
+                    this.logToConsole("Initial admin data loaded.");
+                } catch (error) {
+                    this.showToast("Failed to load initial admin data. Some forms may be disabled.", "error");
+                    console.error("Error loading initial admin data:", error);
+                }
+            },
+
+            async onSchoolSelect(schoolId, form) {
+                if (!schoolId) return;
+                this.logToConsole(`School selected: ${schoolId}. Fetching related data...`);
+
+                const studentSelect = form.querySelector('select[name="student_id"]');
+                const teacherSelect = form.querySelector('select[name="teacher_id"]');
+                const classSelect = form.querySelector('select[name="class_id"]');
+                const subjectSelect = form.querySelector('select[name="subject_id"]');
+
+                try {
+                    if (studentSelect) {
+                        const students = await this.fetchAPI(`/school/${schoolId}/students`);
+                        this.populateSelect(studentSelect, students.map(s => ({ value: s.id, text: `${s.first_name} ${s.last_name}` })));
+                    }
+                    if (teacherSelect) {
+                        const teachers = await this.fetchAPI(`/school/${schoolId}/teachers`);
+                        this.populateSelect(teacherSelect, teachers.map(t => ({ value: t.id, text: `${t.first_name} ${t.last_name}` })));
+                    }
+                    if (classSelect) {
+                        const classes = await this.fetchAPI(`/school/${schoolId}/classes`);
+                        this.populateSelect(classSelect, classes.map(c => ({ value: c.id, text: `Grade ${c.grade}${c.letter}` })));
+                    }
+                    if (subjectSelect) {
+                        const subjects = await this.fetchAPI(`/school/${schoolId}/subjects`);
+                        this.populateSelect(subjectSelect, subjects.map(s => ({ value: s.id, text: s.name })));
+                    }
+                    this.logToConsole("Dependent dropdowns populated.");
+                } catch (error) {
+                    this.showToast("Failed to load school-specific data.", "error");
+                }
+            },
+
+            populateSelect(selector, options, isInitial = false) {
+                const elements = (typeof selector === 'string') ? document.querySelectorAll(selector) : [selector];
+                elements.forEach(select => {
+                    if (isInitial && select.options.length > 1) return;
+
+                    const currentValue = select.value;
+                    select.innerHTML = '<option value="">-- Select an option --</option>';
+                    options.forEach(opt => {
+                        const option = document.createElement('option');
+                        option.value = opt.value;
+                        option.textContent = opt.text;
+                        select.appendChild(option);
+                    });
+                    select.value = currentValue;
+                });
+            },
+
             // --- Form Handling & UI Utilities ---
             showToast(message, type = 'success') {
                 const container = document.getElementById('toast-container');
@@ -883,12 +968,19 @@
                 const obj = {};
                 for (let [key, value] of formData.entries()) {
                     const input = formElement.querySelector(`[name="${key}"]`);
-                    obj[key] = (input && input.type === 'number') ? (value ? Number(value) : null) : value;
+                    obj[key] = (input && (input.type === 'number' || input.tagName === 'SELECT')) ? (value ? Number(value) : null) : value;
                 }
                 return obj;
             },
 
             bindEvents() {
+                // Listen for school changes to dynamically populate other fields
+                document.getElementById('page-admin').addEventListener('change', (e) => {
+                    if (e.target.matches('select[name="school_id"]')) {
+                        this.onSchoolSelect(e.target.value, e.target.closest('form'));
+                    }
+                });
+
                 // Handle all Action Forms silently in the background
                 document.querySelectorAll('form[data-endpoint]').forEach(form => {
                     form.addEventListener('submit', async (e) => {
@@ -897,7 +989,6 @@
                         const method = form.getAttribute('data-method');
                         const payload = this.extractFormData(form);
 
-                        // Handle dynamic URLs (e.g. /grade/{grade_id}/edit)
                         if (form.classList.contains('dynamic-url-form')) {
                             const pathVars = endpoint.match(/{([^}]+)}/g) || [];
                             pathVars.forEach(variable => {
@@ -928,7 +1019,7 @@
                     });
                 });
 
-                // Handle Login Form specifically
+                // Handle Login Form
                 document.getElementById('login-form').addEventListener('submit', async (e) => {
                     e.preventDefault();
                     const payload = this.extractFormData(e.target);
@@ -952,7 +1043,7 @@
                     }
                 });
 
-                // Handle Public Registration Form specifically
+                // Handle Public Registration Form
                 document.getElementById('public-register-form').addEventListener('submit', async (e) => {
                     e.preventDefault();
                     const payload = this.extractFormData(e.target);

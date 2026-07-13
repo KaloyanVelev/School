@@ -11,7 +11,7 @@ routes = [
     (UserRegisterResource, '/register'),
     (UserLogInResource, '/login'),
     (UserMeResource, '/user/me'),
-    (UserListResource, '/users/list'), # New route for listing all users
+    (UserListResource, '/users/list'),
     (SchoolResource.SchoolAdd, '/school/add'),
     (SchoolResource.SchoolsList, '/schools/list'),
     (SchoolSubjectResource.GetAllDirectors, '/principles/list'),

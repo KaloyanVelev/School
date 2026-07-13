@@ -9,6 +9,8 @@ policy = PasswordPolicy.from_names(
 
 
 class BaseUserSchema(Schema):
+    first_name = fields.String()
+    last_name = fields.String()
     email = fields.Email(required=True)
 
 
