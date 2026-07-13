@@ -2,6 +2,7 @@ import uuid
 from sqlalchemy.sql import func
 from database import db
 
+
 class RemarkModel(db.Model):
     __tablename__ = 'remarks'
 

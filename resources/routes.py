@@ -1,7 +1,7 @@
-from resources.user import UserRegisterResource, UserLogInResource, TestResource, UserMeResource
+from resources.user import UserRegisterResource, UserLogInResource, TestResource, UserMeResource, UserListResource
 from resources.school import (
     SchoolResource, DirectorResource, TeacherResource, SchoolClassResource, SchoolSubjectResource,
-    StudentListResource, ParentListResource
+    StudentListResource
 )
 from resources.student import StudentResource
 from resources.schedule import ScheduleResource
@@ -11,6 +11,7 @@ routes = [
     (UserRegisterResource, '/register'),
     (UserLogInResource, '/login'),
     (UserMeResource, '/user/me'),
+    (UserListResource, '/users/list'), # New route for listing all users
     (SchoolResource.SchoolAdd, '/school/add'),
     (SchoolResource.SchoolsList, '/schools/list'),
     (SchoolSubjectResource.GetAllDirectors, '/principles/list'),
@@ -23,7 +24,6 @@ routes = [
     (SchoolSubjectResource.SchoolSubjectList, '/school/<string:school_id>/subjects'),
     (StudentResource.AddStudentToClass, '/student/add-to-class'),
     (StudentListResource, '/school/<string:school_id>/students'),
-    (ParentListResource, '/school/<string:school_id>/parents'),
     (ScheduleResource.AddSchedule, '/schedule/add'),
     (ScheduleResource.StudentScheduleList, '/schedule/my-class'),
     (GradeResource.AddGrade, '/grade/add'),

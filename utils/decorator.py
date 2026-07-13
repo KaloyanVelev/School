@@ -21,7 +21,6 @@ def permission_required(required_permission):
     return decorator
 
 
-
 def validate_schema(schema):
     def decorator(function):
         @wraps(function)

@@ -18,6 +18,6 @@ class PasswordValidationMixin:
 
     @validates('password')
     def validate_password(self, password, **kwargs):
-        errors =policy.test(password)
+        errors = policy.test(password)
         if errors:
             raise ValidationError(self.password_error)

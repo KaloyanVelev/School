@@ -1,5 +1,9 @@
 from marshmallow import Schema, fields
 
+class SubjectNestedSchema(Schema):
+    id = fields.String(dump_only=True)
+    name = fields.String(dump_only=True)
+
 class ScheduleResponseSchema(Schema):
     id = fields.String(dump_only=True)
     day_of_week = fields.String(dump_only=True)
@@ -8,5 +12,5 @@ class ScheduleResponseSchema(Schema):
     class_number = fields.Integer(dump_only=True)
     room_number = fields.Integer(dump_only=True)
     class_id = fields.String(dump_only=True)
-    subject_id = fields.String(dump_only=True)
+    subject = fields.Nested(SubjectNestedSchema, dump_only=True)
     teacher_id = fields.String(dump_only=True)

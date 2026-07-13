@@ -2,7 +2,6 @@ from database import db
 import uuid
 
 
-
 class SchoolModel(db.Model):
     __tablename__ = 'schools'
 

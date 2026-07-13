@@ -5,6 +5,7 @@ from managers.auth import AuthManager
 from models.enums import UserRole
 from sqlalchemy.exc import IntegrityError
 from exceptions import AuthError
+from schemas.response.auth import UserResponseSchema # Import UserResponseSchema
 
 DUMMY_PASSWORD_HASH = generate_password_hash("dummy_password")
 
@@ -79,3 +80,12 @@ class UserManager:
             "token": token,
             "Permission Level": user.permission.name
         }
+
+    @staticmethod
+    def list_all_users():
+        try:
+            users = UserModel.query.all()
+            schema = UserResponseSchema(many=True)
+            return schema.dump(users)
+        except Exception:
+            raise ValueError('Failed to retrieve users from the database.')

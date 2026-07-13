@@ -5,7 +5,7 @@ from exceptions import AuthError
 from managers.auth import auth
 from schemas.request.auth import ScoolAddSchema, AddDirectorsSchema
 from schemas.request.school import SchoolClassAddSchema, SchoolSubjectAddSchema
-from schemas.response.auth import SchoolClassListSchema, SchoolSubjectListSchema, TeacherListSchema, StudentListSchema, ParentListSchema
+from schemas.response.auth import SchoolClassListSchema, SchoolSubjectListSchema, TeacherListSchema, StudentListSchema
 from utils.decorator import validate_schema,permission_required
 
 
@@ -219,23 +219,6 @@ class StudentListResource(Resource):
             students = SchoolManager.list_students(school_id)
             schema = StudentListSchema(many=True)
             return schema.dump(students), 200
-        except AuthError as error:
-            response = jsonify({'error': error.message})
-            response.status_code = error.status_code
-            return response
-        except ValueError as error:
-            response = jsonify({'error': str(error)})
-            response.status_code = 400
-            return response
-
-class ParentListResource(Resource):
-    @auth.login_required
-    @permission_required("director")
-    def get(self, school_id):
-        try:
-            parents = SchoolManager.list_parents(school_id)
-            schema = ParentListSchema(many=True)
-            return schema.dump(parents), 200
         except AuthError as error:
             response = jsonify({'error': error.message})
             response.status_code = error.status_code

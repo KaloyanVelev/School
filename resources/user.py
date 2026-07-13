@@ -62,6 +62,17 @@ class UserMeResource(Resource):
             response.status_code = 500
             return response
 
+class UserListResource(Resource):
+    @auth.login_required
+    def get(self):
+        try:
+            users = UserManager.list_all_users()
+            return users, 200
+        except ValueError as error:
+            response = jsonify({'error': str(error)})
+            response.status_code = 400
+            return response
+
 class TestResource(Resource):
     def get(self):
         return jsonify({'message': 'App is working'})

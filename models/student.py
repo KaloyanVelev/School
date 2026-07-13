@@ -1,6 +1,7 @@
 import uuid
 from database import db
 
+
 class StudentModel(db.Model):
     __tablename__ = 'students'
 

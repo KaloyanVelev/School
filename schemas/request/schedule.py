@@ -1,5 +1,6 @@
 from marshmallow import Schema, fields, validate
 
+
 class ScheduleAddSchema(Schema):
     day_of_week = fields.String(required=True, validate=validate.OneOf([
         "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"

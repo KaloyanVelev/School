@@ -2,6 +2,7 @@ import uuid
 from sqlalchemy.sql import func
 from database import db
 
+
 class GradeModel(db.Model):
     __tablename__ = 'grades'
 
@@ -14,7 +15,7 @@ class GradeModel(db.Model):
     teacher_id = db.Column(db.String(40), db.ForeignKey('users.id'), nullable=False)
     subject_id = db.Column(db.String(40), db.ForeignKey('school_subjects.id'), nullable=False)
 
-
+    subject = db.relationship('SchoolSubjectModel', backref='grades')
 
     __table_args__ = (
         db.CheckConstraint('value >= 2 AND value <= 6', name='grade_range_check'),

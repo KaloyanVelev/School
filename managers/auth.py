@@ -8,7 +8,6 @@ from flask_httpauth import HTTPTokenAuth
 auth = HTTPTokenAuth(scheme='Bearer')
 
 
-
 class AuthManager:
     @staticmethod
     def encode_token(user):
@@ -17,6 +16,7 @@ class AuthManager:
             'sub': user.id
         }
         return jwt.encode(payload, current_app.config['SECRET_KEY'], algorithm='HS256')
+
     @staticmethod
     def decode_token(token):
         try:
@@ -26,6 +26,7 @@ class AuthManager:
             return None
         except jwt.InvalidTokenError:
             return None
+
 
 @auth.verify_token
 def verify_token(token):

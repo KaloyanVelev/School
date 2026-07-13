@@ -1,0 +1,982 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>School Management System</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+        :root {
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --primary-light: #e0e7ff;
+            --secondary: #64748b;
+            --danger: #ef4444;
+            --success: #10b981;
+            --bg: #f8fafc;
+            --surface: #ffffff;
+            --border: #e2e8f0;
+            --text-main: #0f172a;
+            --text-muted: #475569;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --radius-md: 0.5rem;
+            --radius-lg: 0.75rem;
+            --sidebar-width: 260px;
+        }
+
+        * { box-sizing: border-box; font-family: 'Inter', system-ui, sans-serif; }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg);
+            color: var(--text-main);
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+        }
+
+        /* --- Auth Screen --- */
+        #auth-screen {
+            position: fixed;
+            inset: 0;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 50;
+        }
+
+        .auth-box {
+            background: var(--surface);
+            padding: 3rem 2.5rem;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .auth-logo { font-size: 3rem; margin-bottom: 1rem; }
+        .auth-box h2 { margin: 0 0 0.5rem 0; color: var(--text-main); font-size: 1.5rem; }
+        .auth-box p { color: var(--text-muted); margin-bottom: 2rem; font-size: 0.9rem; }
+
+        /* --- Application Shell --- */
+        #app-shell {
+            display: flex;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* --- Sidebar --- */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: var(--surface);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            z-index: 10;
+        }
+
+        .sidebar-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-weight: 700;
+            font-size: 1.25rem;
+            color: var(--primary);
+        }
+
+        .nav-links {
+            padding: 1.5rem 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            flex: 1;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            color: var(--text-muted);
+            text-decoration: none;
+            border-radius: var(--radius-md);
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .nav-item:hover { background: var(--bg); color: var(--text-main); }
+        .nav-item.active { background: var(--primary-light); color: var(--primary); }
+
+        .sidebar-footer {
+            padding: 1.5rem;
+            border-top: 1px solid var(--border);
+        }
+
+        /* --- Main Content Area --- */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            background: var(--bg);
+        }
+
+        .top-header {
+            background: var(--surface);
+            padding: 1.25rem 2rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .top-header h1 { margin: 0; font-size: 1.25rem; font-weight: 600; }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .user-avatar {
+            width: 36px; height: 36px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex; justify-content: center; align-items: center;
+            font-weight: 600;
+        }
+
+        .page-container {
+            flex: 1;
+            padding: 2rem;
+            overflow-y: auto;
+        }
+
+        .page { display: none; animation: fadeIn 0.3s ease; }
+        .page.active { display: block; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --- UI Components --- */
+        .card {
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border);
+            padding: 1.5rem;
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 1.5rem;
+        }
+
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+        @media (max-width: 900px) { .grid-2 { grid-template-columns: 1fr; } }
+
+        .form-group { margin-bottom: 1.25rem; }
+        .form-group label { display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.4rem; }
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 0.6rem 0.8rem;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            font-size: 0.95rem;
+            transition: all 0.2s;
+        }
+        .form-group input:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 3px var(--primary-light); }
+
+        button {
+            padding: 0.6rem 1.25rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: var(--radius-md);
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        button:hover { background: var(--primary-hover); }
+
+        button.danger { background: transparent; color: var(--danger); border: 1px solid var(--danger); }
+        button.danger:hover { background: var(--danger); color: white; }
+
+        button.outline { background: transparent; color: var(--primary); border: 1px solid var(--primary); }
+        button.outline:hover { background: var(--primary-light); }
+
+        button.full-width { width: 100%; }
+
+        /* --- Data Tables --- */
+        .table-responsive { overflow-x: auto; margin-top: 1rem; }
+        table { width: 100%; border-collapse: collapse; text-align: left; }
+        th { background: #f8fafc; padding: 1rem; font-weight: 600; color: var(--text-muted); border-bottom: 2px solid var(--border); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em; }
+        td { padding: 1rem; border-bottom: 1px solid var(--border); color: var(--text-main); font-size: 0.95rem; }
+        tr:hover { background: #f8fafc; }
+
+        .grade-pill {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 999px;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+        .grade-excellent { background: #dcfce7; color: #166534; }
+        .grade-good { background: #fef9c3; color: #854d0e; }
+        .grade-poor { background: #fee2e2; color: #991b1b; }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: var(--text-muted);
+        }
+        .empty-state span { font-size: 3rem; display: block; margin-bottom: 1rem; }
+
+        /* --- Admin Tabs --- */
+        .admin-tabs { display: flex; gap: 1rem; border-bottom: 1px solid var(--border); margin-bottom: 1.5rem; overflow-x: auto;}
+        .admin-tab { padding: 0.75rem 1rem; cursor: pointer; color: var(--text-muted); font-weight: 500; border-bottom: 2px solid transparent; white-space: nowrap;}
+        .admin-tab:hover { color: var(--primary); }
+        .admin-tab.active { color: var(--primary); border-bottom-color: var(--primary); }
+        .admin-panel { display: none; }
+        .admin-panel.active { display: block; animation: fadeIn 0.3s; }
+
+        /* --- Toasts --- */
+        #toast-container { position: fixed; bottom: 2rem; right: 2rem; display: flex; flex-direction: column; gap: 0.5rem; z-index: 100; }
+        .toast {
+            background: var(--surface); padding: 1rem 1.5rem; border-radius: var(--radius-md); box-shadow: var(--shadow-md);
+            border-left: 4px solid var(--primary); display: flex; align-items: center; gap: 0.75rem;
+            animation: slideIn 0.3s ease forwards; min-width: 300px;
+        }
+        .toast.error { border-color: var(--danger); }
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+        .hidden { display: none !important; }
+
+        .auth-switch { margin-top: 1.5rem; font-size: 0.9rem; color: var(--text-muted); }
+        .auth-switch a { color: var(--primary); font-weight: 500; text-decoration: none; cursor: pointer; }
+        .auth-switch a:hover { text-decoration: underline; }
+
+        /* --- Debug Console --- */
+        #debug-console {
+            margin-top: 2rem;
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 1rem;
+            border-radius: var(--radius-md);
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.8rem;
+            max-height: 200px;
+            overflow-y: auto;
+            border-top: 2px solid var(--primary);
+        }
+        #debug-console .log-entry {
+            border-bottom: 1px solid #334155;
+            padding: 0.25rem 0;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Authentication Screen -->
+    <div id="auth-screen">
+        <div class="auth-box">
+            <div class="auth-logo">🎓</div>
+            <h2 id="auth-title">School Portal</h2>
+            <p id="auth-subtitle">Please log in to your account</p>
+
+            <!-- Login Form -->
+            <form id="login-form">
+                <div class="form-group" style="text-align: left;">
+                    <label>Email Address</label>
+                    <input type="email" name="email" required placeholder="user@example.com">
+                </div>
+                <div class="form-group" style="text-align: left;">
+                    <label>Password</label>
+                    <input type="password" name="password" required>
+                </div>
+                <button type="submit" class="full-width" style="padding: 0.75rem; font-size: 1rem;">Sign In</button>
+                <div class="auth-switch">
+                    Don't have an account? <a onclick="app.toggleAuthMode('register')">Register here</a>
+                </div>
+            </form>
+
+            <!-- Registration Form (Public) -->
+            <form id="public-register-form" class="hidden">
+                <div class="form-group" style="text-align: left;">
+                    <label>First Name</label>
+                    <input type="text" name="first_name" required placeholder="John">
+                </div>
+                <div class="form-group" style="text-align: left;">
+                    <label>Last Name</label>
+                    <input type="text" name="last_name" required placeholder="Doe">
+                </div>
+                <div class="form-group" style="text-align: left;">
+                    <label>Email Address</label>
+                    <input type="email" name="email" required placeholder="john.doe@example.com">
+                </div>
+                <div class="form-group" style="text-align: left;">
+                    <label>Password</label>
+                    <input type="password" name="password" required>
+                </div>
+                <button type="submit" class="full-width" style="padding: 0.75rem; font-size: 1rem;">Create Account</button>
+                <div class="auth-switch">
+                    Already have an account? <a onclick="app.toggleAuthMode('login')">Sign in</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Main Application Shell -->
+    <div id="app-shell" class="hidden">
+
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                🎓 EduPortal
+            </div>
+            <nav class="nav-links">
+                <a class="nav-item active" onclick="app.navigate('dashboard')">
+                    <span>📊</span> Dashboard
+                </a>
+                <a class="nav-item" onclick="app.navigate('grades')">
+                    <span>📝</span> My Grades
+                </a>
+                <a class="nav-item" onclick="app.navigate('schedule')">
+                    <span>🗓️</span> My Schedule
+                </a>
+                <a class="nav-item" onclick="app.navigate('admin')">
+                    <span>⚙️</span> Administration
+                </a>
+            </nav>
+            <div class="sidebar-footer">
+                <button class="danger full-width" onclick="app.logout()">Log Out</button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="top-header">
+                <h1 id="page-title">Dashboard</h1>
+                <div class="user-profile">
+                    <span id="header-user-name" style="font-size: 0.9rem; color: var(--text-muted); font-weight: 500;">Active Session</span>
+                    <div id="header-user-avatar" class="user-avatar">U</div>
+                </div>
+            </header>
+
+            <div class="page-container">
+
+                <!-- Page: Dashboard -->
+                <div id="page-dashboard" class="page active">
+                    <div class="card" style="background: linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 100%); color: white;">
+                        <h2 style="margin-top: 0;">Welcome back!</h2>
+                        <p style="opacity: 0.9; margin-bottom: 0;">Use the sidebar navigation to view your academic records, schedule, or manage school resources.</p>
+                    </div>
+
+                    <div class="grid-2">
+                        <div class="card">
+                            <h3 style="margin-top: 0; border-bottom: 1px solid var(--border); padding-bottom: 0.75rem;">Quick Links</h3>
+                            <ul style="list-style: none; padding: 0; margin: 0; line-height: 2;">
+                                <li><a href="#" style="color: var(--primary); text-decoration: none;" onclick="app.navigate('grades')">View Latest Grades</a></li>
+                                <li><a href="#" style="color: var(--primary); text-decoration: none;" onclick="app.navigate('schedule')">Check Today's Schedule</a></li>
+                                <li><a href="#" style="color: var(--primary); text-decoration: none;" onclick="app.fetchAPI('/test', 'GET').then(data => app.showToast('Test Passed: API is connected!', 'success')).catch(e => app.showToast('Test Failed: Could not reach API', 'error'))">Run Server Health Test</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Page: My Grades -->
+                <div id="page-grades" class="page">
+                    <div class="card">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                            <h2 style="margin: 0;">Academic Record</h2>
+                            <button onclick="app.loadGrades()" style="padding: 0.4rem 0.8rem; font-size: 0.85rem;">Refresh</button>
+                        </div>
+                        <div id="grades-container">
+                            <!-- Grades Table renders here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Page: My Schedule -->
+                <div id="page-schedule" class="page">
+                    <div class="card">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                            <h2 style="margin: 0;">Class Timetable</h2>
+                            <button onclick="app.loadSchedule()" style="padding: 0.4rem 0.8rem; font-size: 0.85rem;">Refresh</button>
+                        </div>
+                        <div id="schedule-container">
+                            <!-- Schedule Table renders here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Page: Administration -->
+                <div id="page-admin" class="page">
+                    <div class="card">
+                        <h2 style="margin-top: 0; margin-bottom: 1.5rem;">System Administration</h2>
+
+                        <div class="admin-tabs">
+                            <div class="admin-tab active" onclick="app.switchAdminTab('users')">User Management</div>
+                            <div class="admin-tab" onclick="app.switchAdminTab('school')">School & Classes</div>
+                            <div class="admin-tab" onclick="app.switchAdminTab('grading')">Grading Center</div>
+                            <div class="admin-tab" onclick="app.switchAdminTab('directories')">Directories & Reports</div>
+                        </div>
+
+                        <!-- Admin Panel: Users -->
+                        <div id="admin-panel-users" class="admin-panel active">
+                            <h3>Register New User</h3>
+                            <form data-endpoint="/register" data-method="POST">
+                                <div class="grid-2">
+                                    <div class="form-group"><label>First Name</label><input type="text" name="first_name" required></div>
+                                    <div class="form-group"><label>Last Name</label><input type="text" name="last_name" required></div>
+                                    <div class="form-group"><label>Email Address</label><input type="email" name="email" required></div>
+                                    <div class="form-group"><label>Temporary Password</label><input type="password" name="password" required></div>
+                                </div>
+                                <button type="submit">Create User Account</button>
+                            </form>
+
+                            <hr style="border: 0; border-top: 1px solid var(--border); margin: 2rem 0;">
+
+                            <h3>Assign Roles</h3>
+                            <div class="grid-2">
+                                <form data-endpoint="/principle/add" data-method="POST" style="background: var(--bg); padding: 1rem; border-radius: var(--radius-md);">
+                                    <h4 style="margin-top: 0;">Assign Director</h4>
+                                    <div class="form-group"><label>Director ID</label><input type="text" name="director_id" required></div>
+                                    <div class="form-group"><label>School ID</label><input type="text" name="school_id" required></div>
+                                    <button type="submit">Assign to School</button>
+                                </form>
+                                <form data-endpoint="/teacher/add" data-method="POST" style="background: var(--bg); padding: 1rem; border-radius: var(--radius-md);">
+                                    <h4 style="margin-top: 0;">Assign Teacher</h4>
+                                    <div class="form-group"><label>Teacher ID</label><input type="text" name="teacher_id" required></div>
+                                    <div class="form-group"><label>School ID</label><input type="text" name="school_id" required></div>
+                                    <button type="submit">Assign to School</button>
+                                </form>
+                            </div>
+                        </div>
+
+                        <!-- Admin Panel: School Management -->
+                        <div id="admin-panel-school" class="admin-panel">
+                            <div class="grid-2">
+                                <div>
+                                    <h3>Create School</h3>
+                                    <form data-endpoint="/school/add" data-method="POST">
+                                        <div class="form-group"><label>Institution Name</label><input type="text" name="name" required></div>
+                                        <div class="form-group"><label>Address</label><input type="text" name="institution_address" required></div>
+                                        <button type="submit">Register School</button>
+                                    </form>
+                                </div>
+                                <div>
+                                    <h3>Create Class</h3>
+                                    <form data-endpoint="/school/class/add" data-method="POST">
+                                        <div class="grid-2">
+                                            <div class="form-group"><label>Grade Level (e.g., 10)</label><input type="number" name="grade" required></div>
+                                            <div class="form-group"><label>Letter (e.g., A)</label><input type="text" name="letter" required></div>
+                                        </div>
+                                        <div class="form-group"><label>School ID</label><input type="text" name="school_id" required></div>
+                                        <button type="submit">Create Class</button>
+                                    </form>
+                                </div>
+                            </div>
+
+                            <hr style="border: 0; border-top: 1px solid var(--border); margin: 2rem 0;">
+
+                            <h3>Enrollment & Subjects</h3>
+                            <div class="grid-2">
+                                <form data-endpoint="/school/subject/add" data-method="POST" style="background: var(--bg); padding: 1rem; border-radius: var(--radius-md);">
+                                    <h4 style="margin-top: 0;">Add Subject</h4>
+                                    <div class="form-group"><label>Subject Name</label><input type="text" name="name" required></div>
+                                    <div class="form-group"><label>School ID</label><input type="text" name="school_id" required></div>
+                                    <button type="submit">Add Subject</button>
+                                </form>
+                                <form data-endpoint="/student/add-to-class" data-method="POST" style="background: var(--bg); padding: 1rem; border-radius: var(--radius-md);">
+                                    <h4 style="margin-top: 0;">Enroll Student</h4>
+                                    <div class="form-group"><label>Student ID</label><input type="text" name="student_id" required></div>
+                                    <div class="form-group"><label>Class ID</label><input type="text" name="class_id" required></div>
+                                    <button type="submit">Enroll Student</button>
+                                </form>
+                            </div>
+
+                            <hr style="border: 0; border-top: 1px solid var(--border); margin: 2rem 0;">
+
+                            <h3>Schedule Master Entry</h3>
+                            <form data-endpoint="/schedule/add" data-method="POST">
+                                <div class="grid-2">
+                                    <div class="form-group"><label>Day of Week</label><input type="text" name="day_of_week" placeholder="e.g. Monday" required></div>
+                                    <div class="form-group"><label>Class Block Number</label><input type="number" name="class_number" required></div>
+                                    <div class="form-group"><label>Start Time</label><input type="time" name="start_time" required></div>
+                                    <div class="form-group"><label>End Time</label><input type="time" name="end_time" required></div>
+                                    <div class="form-group"><label>Class ID</label><input type="text" name="class_id" required></div>
+                                    <div class="form-group"><label>Teacher ID</label><input type="text" name="teacher_id" required></div>
+                                    <div class="form-group"><label>Subject ID</label><input type="text" name="subject_id" required></div>
+                                    <div class="form-group"><label>Room Number</label><input type="number" name="room_number" required></div>
+                                </div>
+                                <button type="submit">Add to Master Timetable</button>
+                            </form>
+                        </div>
+
+                        <!-- Admin Panel: Grading -->
+                        <div id="admin-panel-grading" class="admin-panel">
+                            <h3>Issue New Grade</h3>
+                            <form data-endpoint="/grade/add" data-method="POST" style="max-width: 600px;">
+                                <div class="grid-2">
+                                    <div class="form-group"><label>Student ID</label><input type="text" name="student_id" required></div>
+                                    <div class="form-group"><label>Subject ID</label><input type="text" name="subject_id" required></div>
+                                </div>
+                                <div class="grid-2">
+                                    <div class="form-group"><label>Teacher ID</label><input type="text" name="teacher_id" required></div>
+                                    <div class="form-group"><label>Grade Value (2-6)</label><input type="number" name="grade" min="2" max="6" required></div>
+                                </div>
+                                <div class="form-group"><label>Teacher's Comment (Optional)</label><input type="text" name="comment"></div>
+                                <button type="submit">Submit Official Grade</button>
+                            </form>
+
+                            <hr style="border: 0; border-top: 1px solid var(--border); margin: 2rem 0;">
+
+                            <div class="grid-2">
+                                <div>
+                                    <h3>Edit Existing Grade</h3>
+                                    <form data-endpoint="/grade/{grade_id}/edit" data-method="PUT" class="dynamic-url-form" style="background: var(--bg); padding: 1rem; border-radius: var(--radius-md);">
+                                        <div class="form-group"><label>Grade Record ID</label><input type="text" name="grade_id" required></div>
+                                        <div class="form-group"><label>New Grade Value (2-6)</label><input type="number" name="grade" min="2" max="6" required></div>
+                                        <div class="form-group"><label>New Comment (Optional)</label><input type="text" name="comment"></div>
+                                        <button type="submit">Update Grade</button>
+                                    </form>
+                                </div>
+                                <div>
+                                    <h3>Delete Grade</h3>
+                                    <form data-endpoint="/grade/{grade_id}/delete" data-method="DELETE" class="dynamic-url-form" style="background: var(--bg); padding: 1rem; border-radius: var(--radius-md);">
+                                        <div class="form-group"><label>Grade Record ID</label><input type="text" name="grade_id" required></div>
+                                        <button type="submit" class="danger">Delete Grade Record</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Admin Panel: Directories & Reports -->
+                        <div id="admin-panel-directories" class="admin-panel">
+                            <h3>Information Directories</h3>
+                            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.5rem;">Use these controls to query and view internal system records.</p>
+
+                            <div class="grid-2" style="margin-bottom: 1.5rem;">
+                                <button class="outline full-width" onclick="app.loadAdminData('/schools/list')">List All Schools</button>
+                                <button class="outline full-width" onclick="app.loadAdminData('/principles/list')">List All Directors</button>
+                            </div>
+
+                            <div class="grid-2">
+                                <form onsubmit="event.preventDefault(); app.loadAdminData(`/school/${this.school_id.value}/teachers`)">
+                                    <div class="form-group"><label>Find Teachers by School ID</label><input type="text" name="school_id" required></div>
+                                    <button type="submit" class="outline full-width">List Teachers</button>
+                                </form>
+                                <form onsubmit="event.preventDefault(); app.loadAdminData(`/school/${this.school_id.value}/classes`)">
+                                    <div class="form-group"><label>Find Classes by School ID</label><input type="text" name="school_id" required></div>
+                                    <button type="submit" class="outline full-width">List Classes</button>
+                                </form>
+                                <form onsubmit="event.preventDefault(); app.loadAdminData(`/school/${this.school_id.value}/subjects`)">
+                                    <div class="form-group"><label>Find Subjects by School ID</label><input type="text" name="school_id" required></div>
+                                    <button type="submit" class="outline full-width">List Subjects</button>
+                                </form>
+                                <form onsubmit="event.preventDefault(); app.loadAdminData(`/school/${this.school_id.value}/students`)">
+                                    <div class="form-group"><label>Find Students by School ID</label><input type="text" name="school_id" required></div>
+                                    <button type="submit" class="outline full-width">List Students</button>
+                                </form>
+                            </div>
+
+                            <div id="admin-data-container" style="margin-top: 2rem; background: var(--bg); padding: 1rem; border-radius: var(--radius-md); min-height: 200px;">
+                                <div class="empty-state" style="padding: 1rem; height: 100%;">
+                                    <span style="font-size: 2rem; margin-bottom: 0.5rem;">🔍</span>
+                                    <p style="margin: 0; font-size: 0.9rem;">Select a directory to view data.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Debug Console -->
+                        <div id="debug-console">
+                            <div style="font-weight: bold; padding-bottom: 0.25rem;">Debug Console</div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- Notifications -->
+    <div id="toast-container"></div>
+
+    <script>
+        const BASE_URL = "http://127.0.0.1:8080";
+
+        const app = {
+            token: localStorage.getItem("token"),
+
+            init() {
+                this.bindEvents();
+                this.checkAuth();
+            },
+
+            // --- Authentication & Routing ---
+            checkAuth() {
+                if (this.token) {
+                    document.getElementById("auth-screen").classList.add("hidden");
+                    document.getElementById("app-shell").classList.remove("hidden");
+                    this.navigate('dashboard');
+                    this.fetchUserProfile();
+                } else {
+                    document.getElementById("auth-screen").classList.remove("hidden");
+                    document.getElementById("app-shell").classList.add("hidden");
+                }
+            },
+
+            async fetchUserProfile() {
+                try {
+                    const data = await this.fetchAPI('/user/me', 'GET');
+                    const name = data.first_name ? `${data.first_name} ${data.last_name}` : (data.email || 'User');
+                    document.getElementById('header-user-name').textContent = name;
+                    document.getElementById('header-user-avatar').textContent = name.charAt(0).toUpperCase();
+                } catch (e) {
+                    console.warn("Could not fetch user profile details.");
+                }
+            },
+
+            toggleAuthMode(mode) {
+                const loginForm = document.getElementById('login-form');
+                const registerForm = document.getElementById('public-register-form');
+                const title = document.getElementById('auth-title');
+                const subtitle = document.getElementById('auth-subtitle');
+
+                if (mode === 'register') {
+                    loginForm.classList.add('hidden');
+                    registerForm.classList.remove('hidden');
+                    title.textContent = 'Create Account';
+                    subtitle.textContent = 'Join the School Portal';
+                } else {
+                    registerForm.classList.add('hidden');
+                    loginForm.classList.remove('hidden');
+                    title.textContent = 'School Portal';
+                    subtitle.textContent = 'Please log in to your account';
+                }
+            },
+
+            logout() {
+                this.token = null;
+                localStorage.removeItem("token");
+                this.checkAuth();
+                this.showToast("You have been securely logged out.", "success");
+            },
+
+            navigate(pageId) {
+                // Update active nav link
+                document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+                const navLink = document.querySelector(`.nav-item[onclick="app.navigate('${pageId}')"]`);
+                if(navLink) navLink.classList.add('active');
+
+                // Update title
+                const titles = {
+                    'dashboard': 'Dashboard',
+                    'grades': 'My Academic Record',
+                    'schedule': 'My Schedule',
+                    'admin': 'System Administration'
+                };
+                document.getElementById('page-title').textContent = titles[pageId] || 'Portal';
+
+                // Switch visible page
+                document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
+                document.getElementById(`page-${pageId}`).classList.add('active');
+
+                // Auto-load data based on page
+                if (pageId === 'grades') this.loadGrades();
+                if (pageId === 'schedule') this.loadSchedule();
+            },
+
+            switchAdminTab(tabId) {
+                document.querySelectorAll('.admin-tab').forEach(el => el.classList.remove('active'));
+                event.target.classList.add('active');
+
+                document.querySelectorAll('.admin-panel').forEach(el => el.classList.remove('active'));
+                document.getElementById(`admin-panel-${tabId}`).classList.add('active');
+            },
+
+            // --- Core API Fetcher ---
+            async fetchAPI(endpoint, method = "GET", payload = null) {
+                const headers = { "Content-Type": "application/json" };
+                if (this.token) headers["Authorization"] = `Bearer ${this.token}`;
+                const config = { method, headers };
+                if (payload) config.body = JSON.stringify(payload);
+
+                try {
+                    const res = await fetch(`${BASE_URL}${endpoint}`, config);
+                    const text = await res.text();
+
+                    let data = {};
+                    try { data = text ? JSON.parse(text) : {}; }
+                    catch (e) { data = { message: text }; }
+
+                    if (!res.ok) throw new Error(data.message || data.error || `Server returned ${res.status}`);
+                    return data;
+                } catch (error) {
+                    console.error("API Error:", error);
+                    throw error;
+                }
+            },
+
+            // --- Specific Data Loaders & Renderers ---
+            async loadGrades() {
+                const container = document.getElementById('grades-container');
+                container.innerHTML = '<div style="padding: 2rem; text-align: center; color: var(--text-muted);">Loading records...</div>';
+
+                try {
+                    const data = await this.fetchAPI('/grade/my-grades', 'GET');
+
+                    if (!Array.isArray(data) || data.length === 0) {
+                        container.innerHTML = `
+                            <div class="empty-state">
+                                <span>📝</span>
+                                <h3>No grades recorded yet</h3>
+                                <p>Your teachers have not published any grades for you.</p>
+                            </div>`;
+                        return;
+                    }
+
+                    let html = `<div class="table-responsive"><table>
+                                <thead><tr>
+                                    <th>Subject</th>
+                                    <th>Grade</th>
+                                    <th>Comment</th>
+                                </tr></thead><tbody>`;
+
+                    data.forEach(grade => {
+                        this.logToConsole(`Grade ID: ${grade.id}, Subject ID: ${grade.subject.id}`);
+                        let pillClass = 'grade-poor';
+                        if (grade.value >= 5) pillClass = 'grade-excellent';
+                        else if (grade.value >= 4) pillClass = 'grade-good';
+
+                        html += `<tr>
+                            <td><strong>${grade.subject.name || '-'}</strong></td>
+                            <td><span class="grade-pill ${pillClass}">${grade.value}</span></td>
+                            <td style="color: var(--text-muted); font-style: italic;">${grade.comment || '-'}</td>
+                        </tr>`;
+                    });
+
+                    html += `</tbody></table></div>`;
+                    container.innerHTML = html;
+
+                } catch (error) {
+                    container.innerHTML = `<div style="color: var(--danger); padding: 1rem;">Failed to load grades. Ensure you are logged in as a student.</div>`;
+                }
+            },
+
+            async loadSchedule() {
+                const container = document.getElementById('schedule-container');
+                container.innerHTML = '<div style="padding: 2rem; text-align: center; color: var(--text-muted);">Loading schedule...</div>';
+
+                try {
+                    const data = await this.fetchAPI('/schedule/my-class', 'GET');
+
+                    if (!Array.isArray(data) || data.length === 0) {
+                        container.innerHTML = `
+                            <div class="empty-state">
+                                <span>🗓️</span>
+                                <h3>No schedule available</h3>
+                                <p>You have not been assigned a timetable yet.</p>
+                            </div>`;
+                        return;
+                    }
+
+                    const dayOrder = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+                    data.sort((a, b) => {
+                        const dayComparison = dayOrder.indexOf(a.day_of_week) - dayOrder.indexOf(b.day_of_week);
+                        if (dayComparison !== 0) {
+                            return dayComparison;
+                        }
+                        return a.start_time.localeCompare(b.start_time);
+                    });
+
+                    let html = `<div class="table-responsive"><table>
+                                <thead><tr>
+                                    <th>Day</th>
+                                    <th>Time</th>
+                                    <th>Room</th>
+                                    <th>Subject</th>
+                                </tr></thead><tbody>`;
+
+                    data.forEach(slot => {
+                        this.logToConsole(`Schedule ID: ${slot.id}, Subject ID: ${slot.subject.id}`);
+                        html += `<tr>
+                            <td style="font-weight: 500;">${slot.day_of_week || '-'}</td>
+                            <td>${slot.start_time || '-'} - ${slot.end_time || '-'}</td>
+                            <td>Room ${slot.room_number || '-'}</td>
+                            <td>${slot.subject.name || '-'}</td>
+                        </tr>`;
+                    });
+
+                    html += `</tbody></table></div>`;
+                    container.innerHTML = html;
+
+                } catch (error) {
+                    container.innerHTML = `<div style="color: var(--danger); padding: 1rem;">Failed to load schedule. Ensure you are enrolled in a class.</div>`;
+                }
+            },
+
+            async loadAdminData(endpoint) {
+                const container = document.getElementById('admin-data-container');
+                container.innerHTML = '<div style="padding: 1rem; text-align: center; color: var(--text-muted);">Fetching directory data...</div>';
+
+                try {
+                    const data = await this.fetchAPI(endpoint, 'GET');
+
+                    if (!Array.isArray(data) || data.length === 0) {
+                        container.innerHTML = `
+                            <div class="empty-state" style="padding: 1rem; height: 100%;">
+                                <span style="font-size: 2rem; margin-bottom: 0.5rem;">📂</span>
+                                <p style="margin: 0; font-size: 0.9rem;">No records found for this query.</p>
+                            </div>`;
+                        return;
+                    }
+
+                    const keys = Object.keys(data[0]);
+                    let html = `<div class="table-responsive" style="margin-top: 0; background: var(--surface); border-radius: var(--radius-md); border: 1px solid var(--border);">
+                                <table style="font-size: 0.85rem;"><thead><tr>`;
+
+                    keys.forEach(k => html += `<th>${k.replace(/_/g, ' ')}</th>`);
+                    html += `</tr></thead><tbody>`;
+
+                    data.forEach(row => {
+                        html += `<tr>`;
+                        keys.forEach(k => html += `<td>${row[k] !== null && row[k] !== undefined ? row[k] : '-'}</td>`);
+                        html += `</tr>`;
+                    });
+
+                    html += `</tbody></table></div>`;
+                    container.innerHTML = html;
+                } catch(error) {
+                    container.innerHTML = `<div style="color: var(--danger); padding: 1rem;">Failed to load data. The resource may not exist.</div>`;
+                }
+            },
+
+            // --- Form Handling & UI Utilities ---
+            showToast(message, type = 'success') {
+                const container = document.getElementById('toast-container');
+                const toast = document.createElement('div');
+                toast.className = `toast ${type}`;
+                toast.innerHTML = `<span>${type === 'success' ? '✅' : '❌'}</span> <div>${message}</div>`;
+                container.appendChild(toast);
+                setTimeout(() => {
+                    toast.style.animation = 'fadeOut 0.3s ease forwards';
+                    setTimeout(() => toast.remove(), 300);
+                }, 4000);
+            },
+
+            logToConsole(message) {
+                const consoleEl = document.getElementById('debug-console');
+                const entry = document.createElement('div');
+                entry.className = 'log-entry';
+                entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+                consoleEl.appendChild(entry);
+                consoleEl.scrollTop = consoleEl.scrollHeight;
+            },
+
+            extractFormData(formElement) {
+                const formData = new FormData(formElement);
+                const obj = {};
+                for (let [key, value] of formData.entries()) {
+                    const input = formElement.querySelector(`[name="${key}"]`);
+                    obj[key] = (input && input.type === 'number') ? (value ? Number(value) : null) : value;
+                }
+                return obj;
+            },
+
+            bindEvents() {
+                // Handle all Action Forms silently in the background
+                document.querySelectorAll('form[data-endpoint]').forEach(form => {
+                    form.addEventListener('submit', async (e) => {
+                        e.preventDefault();
+                        let endpoint = form.getAttribute('data-endpoint');
+                        const method = form.getAttribute('data-method');
+                        const payload = this.extractFormData(form);
+
+                        // Handle dynamic URLs (e.g. /grade/{grade_id}/edit)
+                        if (form.classList.contains('dynamic-url-form')) {
+                            const pathVars = endpoint.match(/{([^}]+)}/g) || [];
+                            pathVars.forEach(variable => {
+                                const key = variable.replace(/[{}]/g, '');
+                                endpoint = endpoint.replace(variable, payload[key]);
+                                delete payload[key];
+                            });
+                        }
+
+                        try {
+                            const btn = form.querySelector('button[type="submit"]');
+                            const originalText = btn.textContent;
+                            btn.textContent = 'Processing...';
+                            btn.disabled = true;
+
+                            await this.fetchAPI(endpoint, method, payload);
+
+                            this.showToast("Action completed successfully.", "success");
+                            form.reset();
+
+                            btn.textContent = originalText;
+                            btn.disabled = false;
+                        } catch(error) {
+                            this.showToast(error.message, "error");
+                            form.querySelector('button[type="submit"]').disabled = false;
+                            form.querySelector('button[type="submit"]').textContent = 'Try Again';
+                        }
+                    });
+                });
+
+                // Handle Login Form specifically
+                document.getElementById('login-form').addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const payload = this.extractFormData(e.target);
+                    const btn = e.target.querySelector('button');
+                    btn.textContent = "Authenticating...";
+
+                    try {
+                        const data = await this.fetchAPI("/login", "POST", payload);
+                        if (data.token) {
+                            this.token = data.token;
+                            localStorage.setItem("token", data.token);
+                            this.checkAuth();
+                            e.target.reset();
+                        } else {
+                            this.showToast("Authentication failed.", "error");
+                        }
+                    } catch (error) {
+                        this.showToast("Login failed. Check your credentials.", "error");
+                    } finally {
+                        btn.textContent = "Sign In";
+                    }
+                });
+
+                // Handle Public Registration Form specifically
+                document.getElementById('public-register-form').addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const payload = this.extractFormData(e.target);
+                    const btn = e.target.querySelector('button');
+                    btn.textContent = "Creating Account...";
+                    btn.disabled = true;
+
+                    try {
+                        await this.fetchAPI("/register", "POST", payload);
+                        this.showToast("Registration successful! You may now sign in.", "success");
+                        e.target.reset();
+                        this.toggleAuthMode('login');
+                    } catch (error) {
+                        this.showToast(error.message || "Registration failed. Please try again.", "error");
+                    } finally {
+                        btn.textContent = "Create Account";
+                        btn.disabled = false;
+                    }
+                });
+            }
+        };
+
+        // Initialize App
+        document.addEventListener('DOMContentLoaded', () => app.init());
+    </script>
+</body>
+</html>

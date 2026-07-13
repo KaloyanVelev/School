@@ -142,15 +142,6 @@ class SchoolManager:
             raise ValueError('Failed to retrieve students from the database.')
 
     @staticmethod
-    def list_parents(school_id):
-        try:
-            parents = UserModel.query.filter_by(affiliated_school_id=school_id, permission=UserRole.PARENT).all()
-            schema = ParentListSchema(many=True)
-            return schema.dump(parents)
-        except Exception:
-            raise ValueError('Failed to retrieve parents from the database.')
-
-    @staticmethod
     def add_school_class(provided_data):
         grade = provided_data.get('grade')
         letter = provided_data.get('letter')
